@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canadian Taxes with Palak</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🌱</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ========== GLOBAL STYLES ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(120deg, #e6f0f5, #f4f7f9, #e6f0f5);
+      background-size: 200% 200%;
+      animation: bgMove 10s ease infinite;
+      color: #023e5a;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ========== NAVBAR ========== */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    nav h1 {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #004A7C, #2D6A4F);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    /* DESKTOP NAVIGATION */
+    .desktop-nav {
+      display: flex;
+      gap: 0;
+    }
+
+    .desktop-nav a {
+      margin-left: 25px;
+      text-decoration: none;
+      color: #023e5a;
+      font-weight: 500;
+      position: relative;
+      transition: 0.3s;
+    }
+
+    .desktop-nav a::after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #2D6A4F;
+      transition: 0.3s;
+    }
+
+    .desktop-nav a:hover::after {
+      width: 100%;
+    }
+
+    /* HAMBURGER MENU */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2.5px;
+      background: #004A7C;
+      border-radius: 2px;
+      transition: all 0.4s ease;
+      transform-origin: center;
+    }
+
+    /* Hamburger X Animation */
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translateY(11px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translateY(-11px);
+    }
+
+    /* MOBILE NAVIGATION */
+    .mobile-nav {
+      display: none;
+      flex-direction: column;
+      background: linear-gradient(135deg, rgba(0, 74, 124, 0.95), rgba(45, 106, 79, 0.95));
+      position: fixed;
+      top: 60px;
+      right: 0;
+      left: 0;
+      border-bottom: 2px solid #2D6A4F;
+      z-index: 999;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .mobile-nav a {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .mobile-nav a:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .mobile-nav a:last-child {
+      border-bottom: none;
+    }
+
+    /* ========== SECTIONS & GENERAL ========== */
+    section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h3 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 30px;
+      color: #004A7C;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #004A7C, #2D6A4F);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 40vh;
+      padding: 40px 20px;
+    }
+
+    .hero-text {
+      text-align: center;
+    }
+
+    .hero-text h2 {
+      font-size: 44px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #004A7C, #006B5F);
+      -webkit-background-clip: text;
+      color: transparent;
+      line-height: 1.2;
+    }
+
+    .hero-text h2 .simple {
+      font-size: 1.6em;
+    }
+
+    /* ABOUT SECTION */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .about img {
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* CARDS & GRID */
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .card {
+      padding: 25px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .card h4 {
+      color: #004A7C;
+      margin-bottom: 12px;
+    }
+
+    .card ul {
+      margin-top: 10px;
+      padding-left: 18px;
+    }
+
+    .card ul li {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    /* CAROUSEL */
+    .carousel {
+      position: relative;
+      overflow: hidden;
+      max-width: 100%;
+      margin: auto;
+      touch-action: pan-y;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: 0.5s ease-in-out;
+    }
+
+    .carousel-item {
+      min-width: 50%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .review {
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stars {
+      color: gold;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #004A7C;
+      color: white;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      opacity: 0.8;
+      transition: 0.3s;
+    }
+
+    .arrow:hover {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .left {
+      left: 10px;
+    }
+
+    .right {
+      right: 10px;
+    }
+
+    /* CONTACT SECTION */
+    .contact-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      font-size: 16px;
+    }
+
+    .contact-info div {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .contact-info div:hover {
+      background: rgba(0, 74, 124, 0.08);
+    }
+
+    .contact-info i {
+      width: 22px;
+      height: 22px;
+      font-size: 22px;
+    }
+
+    .contact-info .fa-envelope {
+      color: #EA4335;
+    }
+
+    .contact-info .fa-phone {
+      color: #0077B5;
+    }
+
+    .socials {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .socials a {
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .socials i {
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .socials .fa-instagram {
+      color: #E4405F;
+    }
+
+    .socials .fa-linkedin {
+      color: #0077B5;
+    }
+
+    .socials .fa-whatsapp {
+      color: #25D366;
+    }
+
+    .socials a:hover i {
+      transform: scale(1.15);
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      animation: popIn 0.3s ease-out;
+      max-width: 90%;
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* FLOATING WHATSAPP BUTTON */
+    .floating-whatsapp {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+      z-index: 998;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .floating-whatsapp:hover {
+      transform: scale(1.15);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ANIMATIONS */
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.3; }
+    }
+
+    .blink {
+      animation: blink 1s infinite;
+      display: inline-block;
+      background: linear-gradient(90deg, #004A7C, #006B5F);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .fade {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 0.6s;
+    }
+
+    .fade.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    /* ========== RESPONSIVE DESIGN ========== */
+    @media (max-width: 768px) {
+      nav {
+        padding: 12px 15px;
+      }
+
+      nav h1 {
+        font-size: 16px;
+      }
+
+      .desktop-nav {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      section {
+        padding: 40px 15px;
+      }
+
+      .hero {
+        min-height: 35vh;
+        padding: 30px 15px;
+      }
+
+      .hero-text h2 {
+        font-size: 28px;
+      }
+
+      .hero-text h2 .simple {
+        font-size: 1.4em;
+      }
+
+      .about {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .carousel-item {
+        min-width: 100%;
+        padding: 15px;
+      }
+
+      .arrow {
+        padding: 8px 10px;
+        font-size: 16px;
+      }
+
+      .left {
+        left: 5px;
+      }
+
+      .right {
+        right: 5px;
+      }
+
+      h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+
+      .contact-info {
+        font-size: 15px;
+      }
+
+      .socials i {
+        font-size: 24px;
+      }
+
+      .floating-whatsapp {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 24px;
+      }
+
+      .modal-content {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      nav h1 {
+        font-size: 14px;
+        margin-right: auto;
+      }
+
+      section {
+        padding: 30px 12px;
+      }
+
+      .hero {
+        min-height: 30vh;
+        padding: 20px 12px;
+      }
+
+      .hero-text h2 {
+        font-size: 24px;
+      }
+
+      .hero-text h2 .simple {
+        font-size: 1.3em;
+      }
+
+      h3 {
+        font-size: 20px;
+      }
+
+      .btn {
+        padding: 10px 18px;
+        font-size: 13px;
+      }
+
+      .floating-whatsapp {
+        width: 48px;
+        height: 48px;
+        bottom: 15px;
+        right: 15px;
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <h1>Canadian Taxes with Palak 🌱</h1>
+  <div class="desktop-nav">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#testimonials">Testimonials</a>
+    <a href="#contact">Contact Us</a>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <a href="#home" onclick="toggleMobileNav()">Home</a>
+  <a href="#about" onclick="toggleMobileNav()">About</a>
+  <a href="#services" onclick="toggleMobileNav()">Services</a>
+  <a href="#testimonials" onclick="toggleMobileNav()">Testimonials</a>
+  <a href="#contact" onclick="toggleMobileNav()">Contact Us</a>
+</div>
+
+<section id="home" class="hero fade">
+  <div class="hero-text">
+    <h2>Taxes Made <span class="simple">Simple</span><span class="blink">.</span></h2>
+  </div>
+</section>
+
+<section id="about" class="about fade">
+  <img src="images/AboutMe.jpg" alt="About Palak" />
+  <div>
+    <h3>About Me</h3>
+    <p>Hi, I'm Palak, a Toronto-based Tax Coordinator and CPA Candidate who makes Canadian taxes way less confusing. I help young professionals and students file with confidence, understand their money, and stop stressing about tax season. Think of me as your go-to tax person for simple, practical tax guidance.</p>
+  </div>
+</section>
+
+<section id="services" class="fade">
+  <h3>Services</h3>
+  <div class="grid">
+    <div class="card">
+      <h4>Personal Tax Services (T1)</h4>
+      <ul>
+        <li>Tuition credits/Work-from-home claims</li>
+        <li>Self-employment income/Uber drivers</li>
+        <li>Rental income reporting</li>
+        <li>RRSP & FHSA contributions</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>Corporate Tax Services (T2)</h4>
+      <ul>
+        <li>Small business corporate tax returns</li>
+        <li>Incorporated Uber & rideshare drivers</li>
+        <li>Incorporated truck drivers & owner-operators</li>
+        <li>GST/HST filing & compliance</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials" class="fade">
+  <h3>Testimonials</h3>
+  <div class="carousel">
+    <div class="carousel-track" id="track">
+      <div class="carousel-item">
+        <div class="card review">
+          <div class="stars">🌱🌱🌱🌱🌱</div>
+          <p>"Very good, friendly, fast and convenient service. Definitely gonna recommend to my friends and family members for tax filing purposes."</p>
+          <small>- Parth Mishra, Ottawa</small>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card review">
+          <div class="stars">🌱🌱🌱🌱🌱</div>
+          <p>"Very quick and awesome work done 👍"</p>
+          <small>- Prachi Bhavsar, Brantford</small>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card review">
+          <div class="stars">🌱🌱🌱🌱🌱</div>
+          <p>"Palak answered all my questions at the time of filing. She was quick with the filing and her attention to detail is top notch. In short, she is knowledgeable!"</p>
+          <small>- Raj, Toronto</small>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card review">
+          <div class="stars">🌱🌱🌱🌱🌱</div>
+          <p>"Super fast in work, filed tax within couple of hours. Advise properly and answer each and every question. Must recommend!"</p>
+          <small>- Jayraj Bagrawala, Windsor</small>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card review">
+          <div class="stars">🌱🌱🌱🌱🌱</div>
+          <p>"I had a great experience working with Palak for my personal taxes. She is knowledgeable, detail-oriented, and made the entire process smooth and stress-free. She took the time to explain everything clearly and ensured I got the best possible outcome. Highly recommend her services!"</p>
+          <small>- Sahil Dangi, Toronto</small>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="card review">
+          <div class="stars">🌱🌱🌱🌱🌱</div>
+          <p>"Absolutely stellar service!"</p>
+          <small>- Aman Singh, Brampton</small>
+        </div>
+      </div>
+    </div>
+    <button class="arrow left" onclick="move(-1)">&#10094;</button>
+    <button class="arrow right" onclick="move(1)">&#10095;</button>
+  </div>
+  <div style="text-align: center; margin-top: 20px;">
+    <button class="btn" onclick="openModal()">Submit a Review</button>
+  </div>
+</section>
+
+<section id="contact" class="fade">
+  <h3>Contact Us</h3>
+  <div class="contact-wrapper">
+    <div class="contact-info">
+      <div onclick="window.location.href='mailto:canadiantaxeswithpalak@gmail.com'">
+        <i class="fas fa-envelope"></i>
+        <span>canadiantaxeswithpalak@gmail.com</span>
+      </div>
+      <div onclick="window.location.href='tel:+16479018046'">
+        <i class="fas fa-phone"></i>
+        <span>+1 647-901-8046</span>
+      </div>
+      <div class="socials">
+        <a href="https://instagram.com/palakbhambri" target="_blank" rel="noopener">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/palakbhambri11/" target="_blank" rel="noopener">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://chat.whatsapp.com/HAVI6cxuo4e4FC19dW7I9d?mode=gi_t" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div style="font-size: 60px; margin-bottom: 15px; line-height: 1;">🌱</div>
+    <h3>Submit Review</h3>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScTNa-Rdth2BI3eRqsgiFKHsPrriQmTLtoYD41JPgzBPVwxKw/viewform?usp=header" target="_blank" rel="noopener" class="btn">Go to Form</a><br><br>
+    <button class="btn" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<a href="https://chat.whatsapp.com/HAVI6cxuo4e4FC19dW7I9d?mode=gi_t" target="_blank" rel="noopener" class="floating-whatsapp" title="Join our WhatsApp group">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<footer>© 2026 Canadian Taxes with Palak 🌱 All rights reserved</footer>
+
+<script>
+  // ========== CAROUSEL VARIABLES ==========
+  let index = 0;
+  const track = document.getElementById('track');
+  const total = 3;
+  let startX = 0;
+  let isDragging = false;
+
+  // ========== CAROUSEL FUNCTIONS ==========
+  function move(d) {
+    index = (index + d + total) % total;
+    track.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  // ========== MODAL FUNCTIONS ==========
+  function openModal() {
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  // ========== MOBILE NAVIGATION TOGGLE ==========
+  function toggleMobileNav() {
+    const mobileNav = document.getElementById('mobileNav');
+    const hamburger = document.getElementById('hamburger');
+    
+    hamburger.classList.toggle('active');
+    
+    if (mobileNav.style.display === 'flex') {
+      mobileNav.style.display = 'none';
+    } else {
+      mobileNav.style.display = 'flex';
+    }
+  }
+
+  document.getElementById('hamburger').addEventListener('click', toggleMobileNav);
+
+  // ========== AUTO-ROTATING CAROUSEL ==========
+  setInterval(() => move(1), 4000);
+
+  // ========== TOUCH SUPPORT FOR CAROUSEL ==========
+  track.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+  });
+
+  track.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const currentX = e.touches[0].clientX;
+    const diff = startX - currentX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) move(1);
+      else move(-1);
+      isDragging = false;
+    }
+  });
+
+  track.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+
+  // ========== SCROLLED NAVBAR EFFECT ==========
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // ========== FADE IN ANIMATION ON SCROLL ==========
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('show');
+      }
+    });
+  });
+
+  document.querySelectorAll('.fade').forEach((el) => observer.observe(el));
+
+  // ========== CLOSE MODAL ON ESCAPE KEY ==========
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
+</script>
+
+</body>
+</html>
