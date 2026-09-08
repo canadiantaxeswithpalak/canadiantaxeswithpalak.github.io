@@ -409,12 +409,12 @@
 
     .youtube-grid {
       display: grid;
-      gap: 24px;
+      gap: 18px;
       margin-top: 20px;
     }
 
     .youtube-featured {
-      max-width: 920px;
+      max-width: 980px;
       margin: 0 auto;
       padding: 16px;
       border-radius: 18px;
@@ -423,10 +423,19 @@
       box-shadow: 0 12px 26px rgba(2, 62, 90, 0.1);
     }
 
-    .youtube-embed-wrapper {
+    .youtube-player {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0b1f2a;
+    }
+
+    .youtube-embed-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
       border-radius: 12px;
       overflow: hidden;
       background: linear-gradient(135deg, rgba(0, 74, 124, 0.95), rgba(45, 106, 79, 0.95));
@@ -441,6 +450,53 @@
       background: #0b1f2a;
     }
 
+    .youtube-thumbnails {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .youtube-thumb-button {
+      position: relative;
+      min-width: 0;
+      aspect-ratio: 16 / 9;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #dbe8ed;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .youtube-thumb-button:hover,
+    .youtube-thumb-button.active {
+      transform: translateY(-3px);
+      border-color: #2D6A4F;
+    }
+
+    .youtube-thumb-button img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .youtube-thumb-button span {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(0, 74, 124, 0.9);
+      color: white;
+      font-size: 12px;
+    }
+
     .youtube-cta {
       display: inline-flex;
       align-items: center;
@@ -451,6 +507,10 @@
       text-decoration: none;
       transition: opacity 0.2s ease;
       padding: 8px 0 2px;
+    }
+
+    .youtube-cta .fa-youtube {
+      color: #FF0000;
     }
 
     .youtube-cta:hover {
@@ -810,17 +870,20 @@
   <h3>Latest from YouTube</h3>
   <div class="youtube-grid">
     <div class="youtube-featured">
-      <div class="youtube-embed-wrapper">
-        <iframe
-          class="youtube-embed"
-          src="https://www.youtube.com/embed/videoseries?list=UUMogJDM3-n7Fy91V6PYK8FA&rel=0&modestbranding=1"
-          title="Latest videos from Canadian Taxes with Palak"
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          referrerpolicy="origin"
-          allowfullscreen>
-        </iframe>
+      <div class="youtube-player">
+        <div class="youtube-embed-wrapper">
+          <iframe
+            id="youtube-player"
+            class="youtube-embed"
+            title="Latest videos from Canadian Taxes with Palak"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            referrerpolicy="origin"
+            allowfullscreen>
+          </iframe>
+        </div>
       </div>
+      <div id="youtube-thumbnails" class="youtube-thumbnails" aria-label="Latest YouTube videos"></div>
       <a class="youtube-cta" href="https://www.youtube.com/@Canadiantaxeswithpalakk" target="_blank" rel="noopener">
         <i class="fab fa-youtube"></i> Visit Channel
       </a>
@@ -874,6 +937,104 @@
 <footer>© 2026 Canadian Taxes with Palak 🌱 All rights reserved</footer>
 
 <script>
+  // ========== YOUTUBE VIDEO CAROUSEL ==========
+  const YOUTUBE_CHANNEL_ID = 'UCMogJDM3-n7Fy91V6PYK8FA';
+  const YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@Canadiantaxeswithpalakk';
+  const YOUTUBE_FALLBACK_VIDEO = {
+    id: 'Atw9nTYxhyo',
+    title: 'Latest YouTube video'
+  };
+
+  const youtubePlayer = document.getElementById('youtube-player');
+  const youtubeThumbnails = document.getElementById('youtube-thumbnails');
+  let youtubeVideos = [];
+  let activeYoutubeVideo = 0;
+
+  function setYoutubeVideo(videoIndex) {
+    const video = youtubeVideos[videoIndex];
+    if (!video || !youtubePlayer) return;
+
+    activeYoutubeVideo = videoIndex;
+    youtubePlayer.src = `https://www.youtube.com/embed/${video.id}?rel=0&modestbranding=1`;
+    youtubePlayer.title = video.title;
+
+    document.querySelectorAll('.youtube-thumb-button').forEach((button, index) => {
+      button.classList.toggle('active', index === activeYoutubeVideo);
+    });
+  }
+
+  function renderYoutubeThumbnails() {
+    if (!youtubeThumbnails) return;
+
+    youtubeThumbnails.innerHTML = '';
+
+    youtubeVideos.forEach((video, index) => {
+      const button = document.createElement('button');
+      const image = document.createElement('img');
+      const playIcon = document.createElement('span');
+
+      button.className = 'youtube-thumb-button';
+      button.type = 'button';
+      button.title = video.title;
+      button.setAttribute('aria-label', `Play ${video.title}`);
+      image.src = video.thumbnail;
+      image.alt = video.title;
+      image.loading = 'lazy';
+      playIcon.innerHTML = '<i class="fas fa-play"></i>';
+
+      button.append(image, playIcon);
+      button.addEventListener('click', () => setYoutubeVideo(index));
+      youtubeThumbnails.appendChild(button);
+    });
+
+    setYoutubeVideo(0);
+  }
+
+  function renderYoutubeFallback() {
+    youtubeVideos = [{
+      id: YOUTUBE_FALLBACK_VIDEO.id,
+      title: YOUTUBE_FALLBACK_VIDEO.title,
+      thumbnail: `https://i.ytimg.com/vi/${YOUTUBE_FALLBACK_VIDEO.id}/hqdefault.jpg`
+    }];
+
+    renderYoutubeThumbnails();
+  }
+
+  async function loadYoutubeVideos() {
+    if (!youtubePlayer || !youtubeThumbnails) return;
+
+    const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error('YouTube feed request failed');
+
+      const data = await response.json();
+      const videos = (data.items || []).slice(0, 3).map((item) => ({
+        id: item.guid?.split(':').pop() || item.link?.split('v=')[1],
+        title: item.title || 'YouTube video',
+        thumbnail: item.thumbnail
+      })).filter((video) => video.id && video.thumbnail);
+
+      if (!videos.length) throw new Error('No YouTube videos found');
+
+      youtubeVideos = videos;
+      renderYoutubeThumbnails();
+    } catch (error) {
+      console.warn('YouTube feed unavailable:', error);
+      renderYoutubeFallback();
+    }
+  }
+
+  loadYoutubeVideos();
+  setInterval(loadYoutubeVideos, 15 * 60 * 1000);
+  setInterval(() => {
+    if (youtubeVideos.length > 1) {
+      setYoutubeVideo((activeYoutubeVideo + 1) % youtubeVideos.length);
+    }
+  }, 7000);
+
   // ========== CAROUSEL ==========
   let index = 0;
   const track = document.getElementById('track');
