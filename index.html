@@ -433,13 +433,12 @@
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
-    .youtube-preview {
+    .youtube-embed {
+      width: 100%;
       height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 56px;
+      display: block;
+      border: 0;
+      background: #0b1f2a;
     }
 
     .youtube-cta {
@@ -812,9 +811,15 @@
   <div id="youtube-feed" class="youtube-grid">
     <div class="youtube-featured">
       <div class="youtube-embed-wrapper">
-        <div class="youtube-preview" aria-hidden="true">
-          <i class="fab fa-youtube"></i>
-        </div>
+        <iframe
+          class="youtube-embed"
+          src="https://www.youtube.com/embed/Atw9nTYxhyo"
+          title="Canadian Taxes with Palak video"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        </iframe>
       </div>
       <a class="youtube-cta" href="https://www.youtube.com/@Canadiantaxeswithpalakk" target="_blank" rel="noopener">
         <i class="fab fa-youtube"></i> Visit Channel
@@ -961,8 +966,3 @@
     if (event.key === 'Escape') {
       closeModal();
     }
-  });
-</script>
-
-</body>
-</html>
