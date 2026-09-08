@@ -390,12 +390,71 @@
       color: #0077B5;
     }
 
+    .socials .fa-youtube {
+      color: #FF0000;
+    }
+
     .socials .fa-whatsapp {
       color: #25D366;
     }
 
     .socials a:hover i {
       transform: scale(1.15);
+    }
+
+    /* YOUTUBE SECTION */
+    .youtube-section {
+      padding-top: 30px;
+    }
+
+    .youtube-grid {
+      display: grid;
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .youtube-featured {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 74, 124, 0.08);
+      box-shadow: 0 12px 26px rgba(2, 62, 90, 0.1);
+    }
+
+    .youtube-embed-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(0, 74, 124, 0.95), rgba(45, 106, 79, 0.95));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .youtube-embed {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #0b1f2a;
+    }
+
+    .youtube-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #004A7C;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+      padding: 8px 0 2px;
+    }
+
+    .youtube-cta:hover {
+      opacity: 0.8;
     }
 
     /* MODAL */
@@ -634,6 +693,7 @@
     <a href="#about">About</a>
     <a href="#services">Services</a>
     <a href="#testimonials">Testimonials</a>
+    <a href="#videos">Videos</a>
     <a href="#contact">Contact Us</a>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -648,6 +708,7 @@
   <a href="#about" onclick="toggleMobileNav()">About</a>
   <a href="#services" onclick="toggleMobileNav()">Services</a>
   <a href="#testimonials" onclick="toggleMobileNav()">Testimonials</a>
+  <a href="#videos" onclick="toggleMobileNav()">Videos</a>
   <a href="#contact" onclick="toggleMobileNav()">Contact Us</a>
 </div>
 
@@ -745,6 +806,27 @@
   </div>
 </section>
 
+<section id="videos" class="youtube-section fade">
+  <h3>Latest from YouTube</h3>
+  <div id="youtube-feed" class="youtube-grid">
+    <div class="youtube-featured">
+      <div class="youtube-embed-wrapper">
+        <iframe
+          class="youtube-embed"
+          title="Latest videos from Canadian Taxes with Palak"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        ></iframe>
+      </div>
+      <a class="youtube-cta" href="https://www.youtube.com/@Canadiantaxeswithpalakk" target="_blank" rel="noopener">
+        <i class="fab fa-youtube"></i> Visit Channel
+      </a>
+    </div>
+  </div>
+</section>
+
 <section id="contact" class="fade">
   <h3>Contact Us</h3>
   <div class="contact-wrapper">
@@ -763,6 +845,9 @@
         </a>
         <a href="https://www.linkedin.com/in/palakbhambri11/" target="_blank" rel="noopener">
           <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://www.youtube.com/results?search_query=Canadian+taxes+with+palak" target="_blank" rel="noopener" title="Watch on YouTube">
+          <i class="fab fa-youtube"></i>
         </a>
         <a href="https://wa.me/16479018046" target="_blank" rel="noopener" title="Message on WhatsApp">
           <i class="fab fa-whatsapp"></i>
@@ -788,87 +873,128 @@
 <footer>© 2026 Canadian Taxes with Palak 🌱 All rights reserved</footer>
 
 <script>
-  // ========== CAROUSEL VARIABLES ==========
+  // ========== CONFIG ==========
+  const YOUTUBE_CHANNEL_NAME = 'Canadiantaxeswithpalakk';
+  const YOUTUBE_CHANNEL_URL = `https://www.youtube.com/@${YOUTUBE_CHANNEL_NAME}`;
+
+  // ========== YOUTUBE EMBED ==========
+  const youtubeFrame = document.querySelector('.youtube-embed');
+
+  function setupYouTubeEmbed() {
+    if (!youtubeFrame) return;
+
+    if (window.location.protocol === 'file:') {
+      youtubeFrame.style.display = 'none';
+      const wrapper = youtubeFrame.closest('.youtube-embed-wrapper');
+
+      if (wrapper) {
+        wrapper.innerHTML = `
+          <div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; background:linear-gradient(135deg, rgba(0,74,124,0.95), rgba(45,106,79,0.95)); color:white; text-align:center; padding:20px; font-weight:600;">
+            <div>
+              <div style="font-size:28px; margin-bottom:8px;">📺</div>
+              <div>Open this page from a live server to view the latest YouTube videos.</div>
+            </div>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    youtubeFrame.src = `https://www.youtube.com/embed?listType=user_uploads&list=${YOUTUBE_CHANNEL_NAME}`;
+  }
+
+  setupYouTubeEmbed();
+
+  // ========== CAROUSEL ==========
   let index = 0;
   const track = document.getElementById('track');
   const total = 3;
   let startX = 0;
   let isDragging = false;
 
-  // ========== CAROUSEL FUNCTIONS ==========
-  function move(d) {
-    index = (index + d + total) % total;
-    track.style.transform = `translateX(-${index * 100}%)`;
+  function move(direction) {
+    index = (index + direction + total) % total;
+
+    if (track) {
+      track.style.transform = `translateX(-${index * 100}%)`;
+    }
   }
 
-  // ========== MODAL FUNCTIONS ==========
+  // ========== MODAL ==========
   function openModal() {
-    document.getElementById('modal').style.display = 'flex';
+    const modal = document.getElementById('modal');
+    if (modal) modal.style.display = 'flex';
   }
 
   function closeModal() {
-    document.getElementById('modal').style.display = 'none';
+    const modal = document.getElementById('modal');
+    if (modal) modal.style.display = 'none';
   }
 
-  // ========== MOBILE NAVIGATION TOGGLE ==========
+  // ========== MOBILE NAV ==========
   function toggleMobileNav() {
     const mobileNav = document.getElementById('mobileNav');
     const hamburger = document.getElementById('hamburger');
-    
+
+    if (!mobileNav || !hamburger) return;
+
     hamburger.classList.toggle('active');
-    
-    if (mobileNav.style.display === 'flex') {
-      mobileNav.style.display = 'none';
-    } else {
-      mobileNav.style.display = 'flex';
-    }
+    mobileNav.style.display = mobileNav.style.display === 'flex' ? 'none' : 'flex';
   }
 
-  document.getElementById('hamburger').addEventListener('click', toggleMobileNav);
+  const hamburgerButton = document.getElementById('hamburger');
+  if (hamburgerButton) {
+    hamburgerButton.addEventListener('click', toggleMobileNav);
+  }
 
-  // ========== AUTO-ROTATING CAROUSEL ==========
-  setInterval(() => move(1), 4000);
+  // ========== CAROUSEL AUTO-PLAY ==========
+  if (track) {
+    setInterval(() => move(1), 4000);
 
-  // ========== TOUCH SUPPORT FOR CAROUSEL ==========
-  track.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-    isDragging = true;
-  });
+    track.addEventListener('touchstart', (event) => {
+      startX = event.touches[0].clientX;
+      isDragging = true;
+    });
 
-  track.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const currentX = e.touches[0].clientX;
-    const diff = startX - currentX;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) move(1);
-      else move(-1);
+    track.addEventListener('touchmove', (event) => {
+      if (!isDragging) return;
+
+      const currentX = event.touches[0].clientX;
+      const diff = startX - currentX;
+
+      if (Math.abs(diff) > 50) {
+        move(diff > 0 ? 1 : -1);
+        isDragging = false;
+      }
+    });
+
+    track.addEventListener('touchend', () => {
       isDragging = false;
+    });
+  }
+
+  // ========== NAVBAR SCROLL STATE ==========
+  window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
     }
   });
 
-  track.addEventListener('touchend', () => {
-    isDragging = false;
-  });
-
-  // ========== SCROLLED NAVBAR EFFECT ==========
-  window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
-  });
-
-  // ========== FADE IN ANIMATION ON SCROLL ==========
+  // ========== FADE IN ANIMATION ==========
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add('show');
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
       }
     });
   });
 
-  document.querySelectorAll('.fade').forEach((el) => observer.observe(el));
+  document.querySelectorAll('.fade').forEach((element) => observer.observe(element));
 
-  // ========== CLOSE MODAL ON ESCAPE KEY ==========
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+  // ========== KEYBOARD ==========
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
       closeModal();
     }
   });
